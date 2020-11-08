@@ -28,5 +28,6 @@ public abstract class AbstractGameEngine implements GameEngine {
         running = false;
 
         LOGGER.debug("Game stopped");
+        destroy();
     }
 }

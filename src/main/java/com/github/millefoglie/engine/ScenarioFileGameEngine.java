@@ -55,6 +55,9 @@ public class ScenarioFileGameEngine extends AbstractGameEngine {
 
     @Override
     public void destroy() {
+        ResultManager resultManager = new ResultManager();
+
+        resultManager.print();
         LOGGER.debug("Game destroyed");
     }
 }
