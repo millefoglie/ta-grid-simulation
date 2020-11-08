@@ -142,8 +142,7 @@ public class TransformationSystem implements GameSystem {
             throw GameException.couldNotTransform();
         }
 
-        return grid.isInside(stagePoint) && !hasHeadCollision(currentPoint, orientation)
-                ? stagePoint : currentPoint;
+        return grid.isInside(stagePoint) ? stagePoint : currentPoint;
     }
 
     // Check if two entities move toward each other and swap their positions
@@ -177,7 +176,7 @@ public class TransformationSystem implements GameSystem {
                 = grid.getGridMap()
                       .entrySet()
                       .parallelStream()
-                      .filter(e -> e.getValue().size() > 1)
+                      .filter(this::hasCollision)
                       .collect(Collectors.toList());
 
         for (var collision : collisions) {
@@ -185,29 +184,71 @@ public class TransformationSystem implements GameSystem {
         }
     }
 
-    private void resolveCollisions(Collection<TransformationComponent> components) {
-        if (components.size() < 2) {
+    private boolean hasCollision(Map.Entry<Point, List<TransformationComponent>> e) {
+        return moreThanTwoComponentsAtPoint(e) || hasHeadCollision(e);
+    }
+
+    private boolean moreThanTwoComponentsAtPoint(Map.Entry<Point, List<TransformationComponent>> e) {
+        return e.getValue().size() > 1;
+    }
+
+    private boolean hasHeadCollision(Map.Entry<Point, List<TransformationComponent>> e) {
+        if (e.getValue().size() != 1) {
+            return false;
+        }
+
+        TransformationComponent component = e.getValue().get(0);
+        return hasHeadCollision(component.getCurrentPoint(), component.getOrientation());
+    }
+
+    private void resolveCollisions(List<TransformationComponent> components) {
+        if (components.size() == 0) {
             return;
+        } else if (components.size() == 1) {
+            TransformationComponent component = components.get(0);
+
+            if (!hasHeadCollision(component.getCurrentPoint(), component.getOrientation())) {
+                return;
+            }
+
+            List<TransformationComponent> otherComponents = revertTranslation(component);
+
+            if (otherComponents.isEmpty()) {
+                return;
+            }
+
+            resolveCollisions(otherComponents);
         }
 
         for (Iterator<TransformationComponent> iterator = components.iterator(); iterator.hasNext(); ) {
             TransformationComponent component = iterator.next();
-            Point currentPoint = component.getCurrentPoint();
+            List<TransformationComponent> otherComponents = revertTranslation(component);
 
-            if (!component.isTranslated()) {
+            iterator.remove();
+
+            if (otherComponents.isEmpty()) {
                 continue;
             }
 
-            // revert translation, update grid and resolve collisions on old position
-            iterator.remove();
-            component.setStagePoint(currentPoint);
-
-            Collection<TransformationComponent> otherComponents
-                    = grid.getGridMap().computeIfAbsent(currentPoint, c -> new LinkedList<>());
-
-            otherComponents.add(component);
             resolveCollisions(otherComponents);
         }
+    }
+
+    // returns list of components affected by reversion
+    private List<TransformationComponent> revertTranslation(TransformationComponent component) {
+        if (!component.isTranslated()) {
+            return Collections.emptyList();
+        }
+
+        Point currentPoint = component.getCurrentPoint();
+
+        component.setStagePoint(currentPoint);
+
+        List<TransformationComponent> otherComponents
+                = grid.getGridMap().computeIfAbsent(currentPoint, c -> new LinkedList<>());
+
+        otherComponents.add(component);
+        return otherComponents;
     }
 
     // flip double buffer (commit staged position changes)

@@ -53,6 +53,8 @@ adjacent points and are facing each other, then forward movement is considered
 invalid for both of them, i.e. swapping adjacent position is forbidden in
 the given implementation. 
 
+Tests only cover non-trivial functionality, movement processing in particular.
+
 # Run
 
 ```bash

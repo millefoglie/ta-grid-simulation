@@ -6,6 +6,8 @@ import com.github.millefoglie.entity.EntityManager;
 import com.github.millefoglie.entity.EntityType;
 import com.github.millefoglie.grid.Point;
 
+import java.io.PrintStream;
+
 class ResultManager {
     private final EntityManager entityManager;
 
@@ -17,12 +19,12 @@ class ResultManager {
     /**
      * Print each mower position in format X Y O, one entity per line
      */
-    void print() {
+    void print(PrintStream out) {
         entityManager.findAllByType(EntityType.MOWER)
                      .stream()
                      .map(e -> e.getComponent(TransformationComponent.class))
                      .map(this::formatPosition)
-                     .forEach(System.out::println);
+                     .forEach(out::println);
     }
 
     private String formatPosition(TransformationComponent component) {

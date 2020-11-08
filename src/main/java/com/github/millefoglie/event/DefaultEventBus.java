@@ -26,6 +26,6 @@ public class DefaultEventBus implements EventBus {
 
     @Override
     public void clear() {
-        eventRegistry.forEach((k, v) -> v.clear());
+        eventRegistry.clear();
     }
 }

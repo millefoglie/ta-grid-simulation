@@ -3,6 +3,7 @@ package com.github.millefoglie.engine;
 import com.github.millefoglie.ApplicationContext;
 import com.github.millefoglie.event.EventBus;
 import com.github.millefoglie.event.GameOverEvent;
+import com.github.millefoglie.exception.FileReadException;
 import com.github.millefoglie.system.GameSystemManager;
 import com.github.millefoglie.system.SchedulerSystem;
 import com.github.millefoglie.system.TransformationSystem;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -35,12 +37,17 @@ public class ScenarioFileGameEngine extends AbstractGameEngine {
             throw new IllegalStateException("Scenario file does not exist");
         }
 
-        ScenarioParser scenarioParser = new ScenarioParser(scenarioPath);
-        scenarioParser.parse();
+        ScenarioParser scenarioParser = new ScenarioParser();
 
-        systemManager.register(new SchedulerSystem());
-        systemManager.register(new TransformationSystem());
-        LOGGER.debug("Game initialized");
+        try {
+            scenarioParser.parse(Files.readAllLines(scenarioPath));
+        } catch (Exception e) {
+            throw FileReadException.couldNotParseScenarioFile();
+        }
+
+             systemManager.register(new SchedulerSystem());
+             systemManager.register(new TransformationSystem());
+             LOGGER.debug("Game initialized");
     }
 
     @Override
@@ -61,7 +68,7 @@ public class ScenarioFileGameEngine extends AbstractGameEngine {
     public void destroy() {
         ResultManager resultManager = new ResultManager();
 
-        resultManager.print();
+        resultManager.print(System.out);
         LOGGER.debug("Game destroyed");
     }
 }

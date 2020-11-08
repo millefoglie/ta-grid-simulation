@@ -13,30 +13,21 @@ import com.github.millefoglie.grid.Movement;
 import com.github.millefoglie.grid.Orientation;
 import com.github.millefoglie.grid.Point;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 class ScenarioParser {
-    private final Path scenarioPath;
     private final ApplicationContext appCtx = ApplicationContext.getInstance();
     private final EntityManager entityManager;
     private final ComponentManager componentManager;
 
-    ScenarioParser(Path scenarioPath) {
-        Objects.requireNonNull(scenarioPath);
-
-        this.scenarioPath = scenarioPath;
+    ScenarioParser() {
         entityManager = appCtx.getBean(EntityManager.class);
         componentManager = appCtx.getBean(ComponentManager.class);
     }
 
-    void parse() {
+    void parse(List<String> lines) {
         try {
-            List<String> lines = Files.readAllLines(scenarioPath);
-
             parseGrid(lines.get(0));
 
             for (int i = 1; i < lines.size(); i += 2) {

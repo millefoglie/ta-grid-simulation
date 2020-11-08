@@ -17,6 +17,14 @@ public class Grid {
         this.height = height;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
     public Map<Point, List<TransformationComponent>> getGridMap() {
         return gridMap;
     }
