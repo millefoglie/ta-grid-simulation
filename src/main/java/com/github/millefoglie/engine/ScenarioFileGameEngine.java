@@ -1,5 +1,9 @@
 package com.github.millefoglie.engine;
 
+import com.github.millefoglie.ApplicationContext;
+import com.github.millefoglie.event.EventBus;
+import com.github.millefoglie.system.GameSystemManager;
+import com.github.millefoglie.system.SchedulerSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,9 +14,14 @@ public class ScenarioFileGameEngine extends AbstractGameEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final Path scenarioPath;
+    private final GameSystemManager systemManager;
+    private final EventBus eventBus;
 
     public ScenarioFileGameEngine(Path scenarioPath) {
         this.scenarioPath = scenarioPath;
+        ApplicationContext appCtx = ApplicationContext.getInstance();
+        this.systemManager = appCtx.getBean(GameSystemManager.class);
+        this.eventBus = appCtx.getBean(EventBus.class);
     }
 
     @Override
@@ -23,12 +32,17 @@ public class ScenarioFileGameEngine extends AbstractGameEngine {
 
         ScenarioParser scenarioParser = new ScenarioParser(scenarioPath);
         scenarioParser.parse();
+
+        systemManager.registerSystem(new SchedulerSystem());
         LOGGER.debug("Game initialized");
     }
 
     @Override
     public void loop() {
-        LOGGER.info("Hello, world!");
+        eventBus.clear();
+        systemManager.updateAll();
+
+        // TODO implement game over condition
         stop();
     }
 

@@ -5,6 +5,8 @@ import com.github.millefoglie.entity.Entity;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,11 @@ public class DefaultComponentManager implements ComponentManager {
         componentsOfClass.add(component);
         entity.setComponent(componentClass, component);
         return component;
+    }
+
+    @Override
+    public <T> Collection<T> findAllByClass(Class<T> componentClass) {
+        return (List<T>) componentRegistry.getOrDefault(componentClass, Collections.emptyList());
     }
 
 }
