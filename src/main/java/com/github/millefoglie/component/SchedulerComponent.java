@@ -6,6 +6,9 @@ import com.github.millefoglie.grid.Movement;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Component for scheduling entity actions, e.g. queuing movements
+ */
 public class SchedulerComponent extends AbstractComponent {
     private final Queue<Movement> movementQueue = new LinkedList<>();
 

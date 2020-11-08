@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class ScenarioFileGameEngine extends AbstractGameEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -20,6 +21,8 @@ public class ScenarioFileGameEngine extends AbstractGameEngine {
     private final EventBus eventBus;
 
     public ScenarioFileGameEngine(Path scenarioPath) {
+        Objects.requireNonNull(scenarioPath);
+
         this.scenarioPath = scenarioPath;
         ApplicationContext appCtx = ApplicationContext.getInstance();
         this.systemManager = appCtx.getBean(GameSystemManager.class);
@@ -28,15 +31,15 @@ public class ScenarioFileGameEngine extends AbstractGameEngine {
 
     @Override
     public void init() {
-        if ((scenarioPath == null) || !scenarioPath.toFile().exists()) {
-            throw new IllegalStateException("No scenario file specified");
+        if (!scenarioPath.toFile().exists()) {
+            throw new IllegalStateException("Scenario file does not exist");
         }
 
         ScenarioParser scenarioParser = new ScenarioParser(scenarioPath);
         scenarioParser.parse();
 
-        systemManager.registerSystem(new SchedulerSystem());
-        systemManager.registerSystem(new TransformationSystem());
+        systemManager.register(new SchedulerSystem());
+        systemManager.register(new TransformationSystem());
         LOGGER.debug("Game initialized");
     }
 
@@ -53,6 +56,7 @@ public class ScenarioFileGameEngine extends AbstractGameEngine {
         }
     }
 
+    // clean up is ignored since the app closes anyway after destroy
     @Override
     public void destroy() {
         ResultManager resultManager = new ResultManager();

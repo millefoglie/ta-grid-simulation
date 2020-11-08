@@ -6,6 +6,9 @@ import com.github.millefoglie.component.SchedulerComponent;
 import com.github.millefoglie.event.EventBus;
 import com.github.millefoglie.event.TransformationRequestedEvent;
 
+/**
+ * System that processed scheduled or queue entity actions
+ */
 public class SchedulerSystem implements GameSystem {
     private final ComponentManager componentManager;
     private final EventBus eventBus;

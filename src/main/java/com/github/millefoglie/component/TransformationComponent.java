@@ -6,8 +6,14 @@ import com.github.millefoglie.grid.Point;
 
 import java.util.Objects;
 
+/**
+ * Component for managing entity positioning
+ *
+ * This component uses double buffering for staging next grid positions,
+ * detecting collisions and rolling back any forbidden movements.
+ */
 public class TransformationComponent extends AbstractComponent {
-    private Point currentPoint = new Point();
+    private Point currentPoint;
     private Point stagePoint;
     private Orientation orientation;
 
@@ -20,6 +26,8 @@ public class TransformationComponent extends AbstractComponent {
     }
 
     public void setCurrentPoint(Point currentPoint) {
+        Objects.requireNonNull(currentPoint);
+
         this.currentPoint = currentPoint;
 
         if (stagePoint == null) {
@@ -32,6 +40,7 @@ public class TransformationComponent extends AbstractComponent {
     }
 
     public void setStagePoint(Point stagePoint) {
+        Objects.requireNonNull(stagePoint);
         this.stagePoint = stagePoint;
     }
 
@@ -40,6 +49,7 @@ public class TransformationComponent extends AbstractComponent {
     }
 
     public void setOrientation(Orientation orientation) {
+        Objects.requireNonNull(orientation);
         this.orientation = orientation;
     }
 

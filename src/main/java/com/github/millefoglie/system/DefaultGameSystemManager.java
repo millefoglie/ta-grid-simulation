@@ -7,7 +7,7 @@ public class DefaultGameSystemManager implements GameSystemManager {
     private final List<GameSystem> gameSystems = new ArrayList<>();
 
     @Override
-    public void registerSystem(GameSystem system) {
+    public void register(GameSystem system) {
         gameSystems.add(system);
     }
 

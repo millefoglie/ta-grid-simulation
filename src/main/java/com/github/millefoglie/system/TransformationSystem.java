@@ -9,6 +9,7 @@ import com.github.millefoglie.entity.EntityType;
 import com.github.millefoglie.event.EventBus;
 import com.github.millefoglie.event.GameOverEvent;
 import com.github.millefoglie.event.TransformationRequestedEvent;
+import com.github.millefoglie.exception.GameException;
 import com.github.millefoglie.grid.Grid;
 import com.github.millefoglie.grid.Movement;
 import com.github.millefoglie.grid.Orientation;
@@ -25,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * System for managing entity positioning on the grid, including movement and collision detection
+ */
 public class TransformationSystem implements GameSystem {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -44,6 +48,7 @@ public class TransformationSystem implements GameSystem {
         Collection<TransformationRequestedEvent> events =
                 eventBus.findAllByClass(TransformationRequestedEvent.class);
 
+        // if nothing happens, the game is over
         if (events.isEmpty()) {
             eventBus.register(new GameOverEvent());
             return;
@@ -66,8 +71,7 @@ public class TransformationSystem implements GameSystem {
     }
 
     private void handleEvents(Collection<TransformationRequestedEvent> events) {
-        events.parallelStream()
-              .forEach(this::updatePosition);
+        events.parallelStream().forEach(this::updatePosition);
     }
 
     private void updatePosition(TransformationRequestedEvent event) {
@@ -113,13 +117,13 @@ public class TransformationSystem implements GameSystem {
             return movement == Movement.LEFT ? Orientation.EAST : Orientation.WEST;
         }
 
-        throw new IllegalArgumentException("Could not rotate");
+        throw GameException.couldNotTransform();
     }
 
     private Point translateForward(Point currentPoint, Orientation orientation) {
         int x = currentPoint.getX();
         int y = currentPoint.getY();
-        Point stagePoint = null;
+        Point stagePoint;
 
         switch (orientation) {
         case NORTH:
@@ -135,13 +139,14 @@ public class TransformationSystem implements GameSystem {
             stagePoint = new Point(x, y - 1);
             break;
         default:
-            stagePoint = new Point();
+            throw GameException.couldNotTransform();
         }
 
         return grid.isInside(stagePoint) && !hasHeadCollision(currentPoint, orientation)
                 ? stagePoint : currentPoint;
     }
 
+    // Check if two entities move toward each other and swap their positions
     private boolean hasHeadCollision(Point currentPoint, Orientation orientation) {
         List<TransformationComponent> otherComponents
                 = grid.getGridMap().getOrDefault(currentPoint, Collections.emptyList());
@@ -164,7 +169,7 @@ public class TransformationSystem implements GameSystem {
             return otherOrientation == Orientation.NORTH;
         }
 
-        return false;
+        throw GameException.couldNotTransform();
     }
 
     private void resolveCollisions() {
@@ -193,6 +198,7 @@ public class TransformationSystem implements GameSystem {
                 continue;
             }
 
+            // revert translation, update grid and resolve collisions on old position
             iterator.remove();
             component.setStagePoint(currentPoint);
 
@@ -204,6 +210,7 @@ public class TransformationSystem implements GameSystem {
         }
     }
 
+    // flip double buffer (commit staged position changes)
     private void flip() {
         grid.getGridMap()
             .entrySet()

@@ -19,7 +19,7 @@ public class DefaultEventBus implements EventBus {
     }
 
     @Override
-    @SuppressWarnings("ALL")
+    @SuppressWarnings("unchecked")
     public <T extends Event> Collection<T> findAllByClass(Class<T> eventClass) {
         return (List<T>) eventRegistry.getOrDefault(eventClass, Collections.emptyList());
     }

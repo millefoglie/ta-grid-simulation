@@ -7,15 +7,16 @@ import com.github.millefoglie.component.TransformationComponent;
 import com.github.millefoglie.entity.Entity;
 import com.github.millefoglie.entity.EntityManager;
 import com.github.millefoglie.entity.EntityType;
+import com.github.millefoglie.exception.FileReadException;
 import com.github.millefoglie.grid.Grid;
 import com.github.millefoglie.grid.Movement;
 import com.github.millefoglie.grid.Orientation;
 import com.github.millefoglie.grid.Point;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 class ScenarioParser {
@@ -24,7 +25,9 @@ class ScenarioParser {
     private final EntityManager entityManager;
     private final ComponentManager componentManager;
 
-    public ScenarioParser(Path scenarioPath) {
+    ScenarioParser(Path scenarioPath) {
+        Objects.requireNonNull(scenarioPath);
+
         this.scenarioPath = scenarioPath;
         entityManager = appCtx.getBean(EntityManager.class);
         componentManager = appCtx.getBean(ComponentManager.class);
@@ -39,25 +42,37 @@ class ScenarioParser {
             for (int i = 1; i < lines.size(); i += 2) {
                 parseMower(lines.get(i), lines.get(i + 1));
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Could not parse scenario");
+        } catch (Exception e) {
+            throw FileReadException.couldNotParseScenarioFile();
         }
     }
 
-    void parseGrid(String line) {
+    private void parseGrid(String line) {
         Scanner scanner = new Scanner(line);
         int width = scanner.nextInt();
         int height = scanner.nextInt();
 
-        appCtx.registerBean(Grid.class, new Grid(width, height));
+        if (scanner.hasNext() || (width < 0) || (height < 0)) {
+            scanner.close();
+            throw FileReadException.couldNotParseScenarioFile();
+        }
+
         scanner.close();
+        appCtx.registerBean(Grid.class, new Grid(width, height));
     }
 
-    void parseMower(String positionLine, String movementLine) {
+    private void parseMower(String positionLine, String movementLine) {
         Scanner positionScanner = new Scanner(positionLine);
         int x = positionScanner.nextInt();
         int y = positionScanner.nextInt();
         Orientation orientation = Orientation.from(positionScanner.next());
+
+        if (positionScanner.hasNext()) {
+            positionScanner.close();
+            throw FileReadException.couldNotParseScenarioFile();
+        }
+
+        positionScanner.close();
 
         Entity mower = entityManager.createEntity(EntityType.MOWER);
         TransformationComponent transformationComponent
@@ -72,7 +87,5 @@ class ScenarioParser {
         for (char ch : movementLine.toCharArray()) {
             schedulerComponent.offerMovement(Movement.from(ch));
         }
-
-        positionScanner.close();
     }
 }
