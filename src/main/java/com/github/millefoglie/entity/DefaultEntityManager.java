@@ -1,6 +1,8 @@
 package com.github.millefoglie.entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,5 +19,10 @@ public class DefaultEntityManager implements EntityManager {
 
         entitiesOfType.add(entity);
         return entity;
+    }
+
+    @Override
+    public Collection<Entity> findAllByType(EntityType type) {
+        return entityRegistry.getOrDefault(type, Collections.emptyList());
     }
 }

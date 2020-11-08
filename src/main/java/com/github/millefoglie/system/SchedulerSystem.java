@@ -21,6 +21,7 @@ public class SchedulerSystem implements GameSystem {
         componentManager.findAllByClass(SchedulerComponent.class)
                         .parallelStream()
                         .map(c -> new TransformationRequestedEvent(c.getEntity(), c.pollMovement()))
+                        .filter(e -> e.getMovement() != null)
                         .forEach(eventBus::register);
     }
 }

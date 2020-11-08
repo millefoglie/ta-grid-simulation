@@ -6,6 +6,10 @@ import com.github.millefoglie.engine.GameEngine;
 import com.github.millefoglie.engine.ScenarioFileGameEngine;
 import com.github.millefoglie.entity.DefaultEntityManager;
 import com.github.millefoglie.entity.EntityManager;
+import com.github.millefoglie.event.DefaultEventBus;
+import com.github.millefoglie.event.EventBus;
+import com.github.millefoglie.system.DefaultGameSystemManager;
+import com.github.millefoglie.system.GameSystemManager;
 
 import java.nio.file.Paths;
 
@@ -17,6 +21,8 @@ public class App {
 
         appCtx.registerBean(EntityManager.class, new DefaultEntityManager());
         appCtx.registerBean(ComponentManager.class, new DefaultComponentManager());
+        appCtx.registerBean(GameSystemManager.class, new DefaultGameSystemManager());
+        appCtx.registerBean(EventBus.class, new DefaultEventBus());
 
         GameEngine engine = new ScenarioFileGameEngine(Paths.get(filename));
         engine.start();

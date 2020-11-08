@@ -13,4 +13,11 @@ public class AbstractComponent implements Component {
     public Entity getEntity() {
         return entity;
     }
+
+    @Override
+    public String toString() {
+        return "AbstractComponent{" +
+                "entity.id=" + entity.getId() +
+                '}';
+    }
 }

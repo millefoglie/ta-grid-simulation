@@ -2,8 +2,10 @@ package com.github.millefoglie.engine;
 
 import com.github.millefoglie.ApplicationContext;
 import com.github.millefoglie.event.EventBus;
+import com.github.millefoglie.event.GameOverEvent;
 import com.github.millefoglie.system.GameSystemManager;
 import com.github.millefoglie.system.SchedulerSystem;
+import com.github.millefoglie.system.TransformationSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,20 +36,25 @@ public class ScenarioFileGameEngine extends AbstractGameEngine {
         scenarioParser.parse();
 
         systemManager.registerSystem(new SchedulerSystem());
+        systemManager.registerSystem(new TransformationSystem());
         LOGGER.debug("Game initialized");
     }
 
     @Override
     public void loop() {
+        LOGGER.trace("Turn started");
         eventBus.clear();
         systemManager.updateAll();
+        LOGGER.trace("Turn finished");
 
-        // TODO implement game over condition
-        stop();
+        if (!eventBus.findAllByClass(GameOverEvent.class).isEmpty()) {
+            stop();
+            LOGGER.trace("Game over");
+        }
     }
 
     @Override
     public void destroy() {
-        LOGGER.debug("Game over");
+        LOGGER.debug("Game destroyed");
     }
 }

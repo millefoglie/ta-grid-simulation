@@ -10,6 +10,7 @@ import com.github.millefoglie.entity.EntityType;
 import com.github.millefoglie.grid.Grid;
 import com.github.millefoglie.grid.Movement;
 import com.github.millefoglie.grid.Orientation;
+import com.github.millefoglie.grid.Point;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,8 +63,7 @@ class ScenarioParser {
         TransformationComponent transformationComponent
                 = componentManager.createComponent(mower, TransformationComponent.class);
 
-        transformationComponent.setX(x);
-        transformationComponent.setY(y);
+        transformationComponent.setCurrentPoint(new Point(x, y));
         transformationComponent.setOrientation(orientation);
 
         SchedulerComponent schedulerComponent

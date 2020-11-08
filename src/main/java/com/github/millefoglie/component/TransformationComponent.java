@@ -2,30 +2,37 @@ package com.github.millefoglie.component;
 
 import com.github.millefoglie.entity.Entity;
 import com.github.millefoglie.grid.Orientation;
+import com.github.millefoglie.grid.Point;
+
+import java.util.Objects;
 
 public class TransformationComponent extends AbstractComponent {
-    private int x;
-    private int y;
+    private Point currentPoint = new Point();
+    private Point stagePoint;
     private Orientation orientation;
 
     public TransformationComponent(Entity entity) {
         super(entity);
     }
 
-    public int getX() {
-        return x;
+    public Point getCurrentPoint() {
+        return currentPoint;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setCurrentPoint(Point currentPoint) {
+        this.currentPoint = currentPoint;
+
+        if (stagePoint == null) {
+            stagePoint = currentPoint;
+        }
     }
 
-    public int getY() {
-        return y;
+    public Point getStagePoint() {
+        return stagePoint;
     }
 
-    public void setY(int y) {
-        this.y = y;
+    public void setStagePoint(Point stagePoint) {
+        this.stagePoint = stagePoint;
     }
 
     public Orientation getOrientation() {
@@ -34,5 +41,22 @@ public class TransformationComponent extends AbstractComponent {
 
     public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
+    }
+
+    public boolean isTranslated() {
+        return !Objects.equals(currentPoint, stagePoint);
+    }
+
+    public void flip() {
+        currentPoint = stagePoint;
+    }
+
+    @Override
+    public String toString() {
+        return "TransformationComponent{" +
+                "currentPoint=" + currentPoint +
+                ", stagePoint=" + stagePoint +
+                ", orientation=" + orientation +
+                "} " + super.toString();
     }
 }
