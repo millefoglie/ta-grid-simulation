@@ -2,15 +2,15 @@ package com.github.millefoglie.grid;
 
 import com.github.millefoglie.component.TransformationComponent;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Grid {
     private final int width;
     private final int height;
 
-    private final Map<Point, List<TransformationComponent>> gridMap = new ConcurrentHashMap<>();
+    private final Map<Point, ConcurrentLinkedDeque<TransformationComponent>> gridMap = new ConcurrentHashMap<>();
 
     public Grid(int width, int height) {
         this.width = width;
@@ -25,7 +25,7 @@ public class Grid {
         return height;
     }
 
-    public Map<Point, List<TransformationComponent>> getGridMap() {
+    public Map<Point, ConcurrentLinkedDeque<TransformationComponent>> getGridMap() {
         return gridMap;
     }
 

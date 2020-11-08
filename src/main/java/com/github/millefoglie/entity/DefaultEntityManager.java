@@ -1,11 +1,11 @@
 package com.github.millefoglie.entity;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DefaultEntityManager implements EntityManager {
@@ -15,7 +15,7 @@ public class DefaultEntityManager implements EntityManager {
     @Override
     public Entity createEntity(EntityType type) {
         Entity entity = new DefaultEntity(idSequence.getAndIncrement(), type);
-        List<Entity> entitiesOfType = entityRegistry.computeIfAbsent(type, t -> new ArrayList<>());
+        List<Entity> entitiesOfType = entityRegistry.computeIfAbsent(type, t -> new CopyOnWriteArrayList<>());
 
         entitiesOfType.add(entity);
         return entity;

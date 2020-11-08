@@ -4,13 +4,13 @@ import com.github.millefoglie.entity.Entity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultComponentManager implements ComponentManager {
     private final Map<Class<?>, List<Component>> componentRegistry = new HashMap<>();
@@ -29,7 +29,7 @@ public class DefaultComponentManager implements ComponentManager {
             throw new RuntimeException(e);
         }
 
-        componentRegistry.computeIfAbsent(componentClass, t -> new ArrayList<>()).add(component);
+        componentRegistry.computeIfAbsent(componentClass, t -> new CopyOnWriteArrayList<>()).add(component);
         entity.setComponent(componentClass, component);
         return component;
     }
