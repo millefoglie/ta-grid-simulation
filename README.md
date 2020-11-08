@@ -59,7 +59,7 @@ Tests only cover non-trivial functionality, movement processing in particular.
 
 ```bash
 mvn package
-java -jar target/ta-grid-simulation-1.0-SNAPSHOT.jar $FILE
+java -jar target/ta-grid-simulation-1.0-SNAPSHOT-jar-with-dependencies.jar $FILE
 ```
 
 where $FILE is path to the simulation scenario file.
