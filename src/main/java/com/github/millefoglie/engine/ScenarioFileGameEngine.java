@@ -3,20 +3,26 @@ package com.github.millefoglie.engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Path;
 
 public class ScenarioFileGameEngine extends AbstractGameEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final File scenarioFile;
+    private final Path scenarioPath;
 
-    public ScenarioFileGameEngine(File scenarioFile) {
-        this.scenarioFile = scenarioFile;
+    public ScenarioFileGameEngine(Path scenarioPath) {
+        this.scenarioPath = scenarioPath;
     }
 
     @Override
     public void init() {
+        if ((scenarioPath == null) || !scenarioPath.toFile().exists()) {
+            throw new IllegalStateException("No scenario file specified");
+        }
+
+        ScenarioParser scenarioParser = new ScenarioParser(scenarioPath);
+        scenarioParser.parse();
         LOGGER.debug("Game initialized");
     }
 
