@@ -105,7 +105,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.github.millefoglie.App</mainClass>
+                            <mainClass>com.github.millefoglie.gridsim.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
